@@ -7,22 +7,30 @@ module.exports = {
       server.route([
         {
           method: "GET",
-          path: "/api",
-          handler: async (request, h) => {
-            let retVal = '';
-
-                    const ret = xkcd.img.then(data => {
-                        return  data;
-                     });
-                     return (await ret.then(cb));
+          path: "/xkcd",
+          handler: responseHandler,
+          config: {
+            cache: {
+              expiresIn: 0,
+            }
           }
-
-        }
+        },
       ]);
     }
   }
-
-  function cb (d) {
-    // console.dir( d);
-    return '<h3>' + d.img_title + '</h3> <img src=' + d.img_url + '>';
+ const configuration = {
+   config: {
+    cache: {
+      expiresIn: 0,
+      privacy: 'private'
+    }
   }
+ }
+const responseHandler = async (request, h) => {
+  return ret = await xkcd.img.then(data => {
+    return data;
+  }).then(d => {
+     return h.response ('<h4>' + d.img_title + '</h3> <img src=' + d.img_url + '>').header('Cache-Control', 'no-cache, no-store, must-revalidate');
+  });
+}
+
